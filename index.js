@@ -10,7 +10,7 @@ var serverConfig = {
 };
 
 var app = express();
-var HTTPS_PORT = 8443;
+var HTTPS_PORT = 8080;
 
 var httpsServer = https.createServer(serverConfig, app).listen(HTTPS_PORT);
 
