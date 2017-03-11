@@ -30,7 +30,7 @@ var httpsServer = https.createServer(serverConfig, app).listen(HTTPS_PORT);
 
 app.get(/^(.+)$/, function(req, res){ 
     switch(req.params[0]) {
-        case '/':
+        case '/prueba':
             res.send("prueba ok");
             break;
     default: res.sendFile( __dirname + req.params[0]); 
