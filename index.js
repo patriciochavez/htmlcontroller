@@ -1,6 +1,6 @@
 var fs = require('fs');
 var https = require('https');
-//var WebSocketServer = require('ws').Server;
+var WebSocketServer = require('ws').Server;
 var express = require("express");
 var bodyParser = require("body-parser");
 
@@ -14,19 +14,19 @@ var HTTPS_PORT = 8080;
 
 var httpsServer = https.createServer(serverConfig, app).listen(HTTPS_PORT);
 
-//var wss = new WebSocketServer({server: httpsServer});
+var wss = new WebSocketServer({server: httpsServer});
 
-//wss.on('connection', function(ws) {
-//    ws.on('message', function(message) {
-//        wss.broadcast(message);
-//    });
-//});
+wss.on('connection', function(ws) {
+    ws.on('message', function(message) {
+        wss.broadcast(message);
+    });
+});
 
-//wss.broadcast = function(data) {
-//    for(var i in this.clients) {
-//        this.clients[i].send(data);
-//    }
-//};
+wss.broadcast = function(data) {
+    for(var i in this.clients) {
+        this.clients[i].send(data);
+    }
+};
 
 app.get(/^(.+)$/, function(req, res){ 
     switch(req.params[0]) {
