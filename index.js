@@ -11,6 +11,9 @@ var serverConfig = {
 
 var app = express();
 var HTTPS_PORT = 8080;
+var sesion_estado = "NULA";
+var timer;
+var html_player_controller = new Object();
 
 var httpsServer = https.createServer(serverConfig, app).listen(HTTPS_PORT);
 
@@ -18,7 +21,31 @@ var wss = new WebSocketServer({server: httpsServer});
 
 wss.on('connection', function(ws) {
     ws.on('message', function(message) {
-        wss.broadcast(message);
+	html_player_controller = JSON.parse(message);
+	if(html_player_controller.sesion == "NUEVA_SESION") {
+	sesion_estado = "ACTIVA";
+	wss.broadcast(JSON.stringify(html_player_controller));
+	console.log(JSON.stringify(html_player_controller));
+	timer = setTimeout(function(){ 
+		sesion_estado = "NULA"; 
+                html_player_controller.sesion= "FINALIZAR_SESION";
+		console.log(JSON.stringify(html_player_controller));
+                wss.broadcast(JSON.stringify(html_player_controller));
+		}, 30000);	
+	} else if(sesion_estado == "ACTIVA"){
+	clearTimeout(timer);
+        timer = setTimeout(function(){
+                sesion_estado = "NULA";
+		html_player_controller.sesion = "FINALIZAR_SESION";
+		console.log(JSON.stringify(html_player_controller));
+		wss.broadcast(JSON.stringify(html_player_controller));	
+                }, 30000);
+     	console.log( JSON.parse(message));
+	var objeto = new Object();
+	objeto = JSON.parse(message);
+	wss.broadcast(JSON.stringify(objeto));
+        //wss.broadcast(message);
+	} 
     });
 });
 
@@ -30,8 +57,8 @@ wss.broadcast = function(data) {
 
 app.get(/^(.+)$/, function(req, res){ 
     switch(req.params[0]) {
-        case '/test':
-            res.send("Ok!");
+        case '/aceleracion':
+            res.send(JSON.stringify(aceleracion));
             break;
     default: res.sendFile( __dirname + req.params[0]); 
     }
