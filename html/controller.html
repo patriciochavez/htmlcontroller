@@ -8,7 +8,7 @@ var ongoingTouches = [];
 var html_player_controller = new Object();    
 html_player_controller.button="STOP";
 
-var ws = new WebSocket("wss://10.105.231.23:9443");
+var ws = new WebSocket("wss://htmlcontroller-vr.44fs.preview.openshiftapps.com");
 
 function move(player_button){	
     	html_player_controller.action="MOVE";
@@ -35,7 +35,7 @@ function move_reset(player_button){
 	if (JSON.parse(received_msg).sesion == "FINALIZAR_SESION") {
 		document.getElementById("canvas_div").innerHTML = "Sesión expirada por inactividad.";	
 		} else if (JSON.parse(received_msg).poi == "poi_pasillo_frio") {
-			document.getElementById("audio_poi").src = "https://10.105.231.23:9443/html/poi_pasillo_frio.mp3";
+			document.getElementById("audio_poi").src = "https://htmlcontroller-vr.44fs.preview.openshiftapps.com/html/poi_pasillo_frio.mp3";
 			//var mi_audio = document.getElementById("poi_play");
 			//mi_audio.play();
 			document.getElementById("boton").click();
@@ -262,7 +262,7 @@ function log(msg) {
 function Audio_Play(){
                         var mi_audio = document.getElementById("audio_poi");
 			if (mi_audio.src == '') {
-				mi_audio.src = "https://10.105.231.23:9443/html/audio_activado.mp3";
+				mi_audio.src = "https://htmlcontroller-vr.44fs.preview.openshiftapps.com/html/audio_activado.mp3";
 				}
                         mi_audio.load();
                         mi_audio.play();
