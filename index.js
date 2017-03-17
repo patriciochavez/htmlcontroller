@@ -8,7 +8,7 @@ var timer;
 var html_player_controller = new Object();
 var http = require('http');
 
-var httpServer = http.createServer(serverConfig, app).listen(8080);
+var httpServer = http.createServer(app).listen(8080);
 var wss = new WebSocketServer({server: httpServer});
 
 app.use(bodyParser.json());
