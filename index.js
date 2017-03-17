@@ -7,8 +7,8 @@ var sesion_estado = "NULA";
 var timer;
 var html_player_controller = new Object();
 
-var httpsServer = https.createServer(serverConfig, app).listen(HTTPS_PORT);
-var wss = new WebSocketServer({server: httpsServer});
+var httpServer = http.createServer(serverConfig, app).listen(HTTPS_PORT);
+var wss = new WebSocketServer({server: httpServer});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
