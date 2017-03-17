@@ -60,8 +60,3 @@ app.get(/^(.+)$/, function(req, res){
     default: res.sendFile( __dirname + req.params[0]); 
     }
  });
-
-var port = process.env.PORT || 8080;
-app.listen(port, function() {
-        console.log("Escuchando en " + port);
-});
