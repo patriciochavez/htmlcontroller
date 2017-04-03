@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({
         }));
 
 wss.on('connection', function(ws) {
+    console.log("Nueva conexión");
     ws.on('message', function(message) {
     html_player_controller = JSON.parse(message);
     if(html_player_controller.sesion == "NUEVA_SESION") {
