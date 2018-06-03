@@ -3,56 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <title>Multitouch Player Controller</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 var ongoingTouches = [];
-var html_player_controller = new Object();    
+var html_player_controller = new Object();
+
 html_player_controller.button="STOP";
 
-var ws = new WebSocket("wss://htmlcontroller-vr.44fs.preview.openshiftapps.com");
+// Create a client instance
+client = new Paho.MQTT.Client("test.mosquitto.org", Number("8080"), "clientId"+Math.random());
+
+// set callback handlers
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+
+// connect the client
+client.connect({onSuccess:onConnect});
+
+
+// called when the client connects
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  //log("onConnect");
+  client.subscribe("html/controller");
+  message = new Paho.MQTT.Message("onConnect");
+  message.destinationName = "html/controller";
+  client.send(message);
+}
+
+// called when the client loses its connection
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0) {
+    //log("onConnectionLost:"+responseObject.errorMessage);
+  }
+}
+
+// called when a message arrives
+function onMessageArrived(message) {
+  log(message.payloadString);
+}
 
 function move(player_button){	
     	html_player_controller.action="MOVE";
     	html_player_controller.button=player_button;
         html_player_controller.sesion = "ACTIVA";
-    	ws.send(JSON.stringify(html_player_controller));
+	message = new Paho.MQTT.Message(JSON.stringify(html_player_controller)+"</BR>");
+  	message.destinationName = "html/controller";
+  	client.send(message);
 }
 
 function move_reset(player_button){
     	html_player_controller.action="RESET";
     	html_player_controller.button=player_button;	
         html_player_controller.sesion = "ACTIVA";
-    	ws.send(JSON.stringify(html_player_controller));
+	message = new Paho.MQTT.Message(JSON.stringify(html_player_controller)+"</BR>");
+  	message.destinationName = "html/controller";
+  	client.send(message);
 }
-
-	ws.onopen = function() {    
-	 html_player_controller.sesion = "NUEVA_SESION";
-         ws.send(JSON.stringify(html_player_controller)); 
-               };
-				
-        ws.onmessage = function (evt) { 
-        var received_msg = evt.data;  
-//	console.log(JSON.parse(received_msg).poi);            
-	if (JSON.parse(received_msg).sesion == "FINALIZAR_SESION") {
-		document.getElementById("canvas_div").innerHTML = "Sesión expirada por inactividad.";	
-		} else if (JSON.parse(received_msg).poi == "poi_pasillo_frio") {
-			document.getElementById("audio_poi").src = "https://htmlcontroller-vr.44fs.preview.openshiftapps.com/html/poi_pasillo_frio.mp3";
-			//var mi_audio = document.getElementById("poi_play");
-			//mi_audio.play();
-			document.getElementById("boton").click();
-			//Audio_Play();			
-			}
-               };
-				
-        ws.onclose = function() {               
-               }; 
  
-//function Audio_Play(){
-//			var mi_audio = document.getElementById("poi_play");
-			//mi_audio.src="poi_pasillo_frio.mp3";
-//			mi_audio.load();
-//                        mi_audio.play();
-//}
-
 function startup() {
   var el = document.getElementsByTagName("canvas")[0];
 
@@ -250,24 +260,6 @@ function log(msg) {
 </canvas>
 </div>
 
-<audio id="audio_poi" controls style="display:none">
-  <source src="" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
-
-<button type="button" id="boton" onclick="Audio_Play()">Activar audio</button>
-
-<script>
-
-function Audio_Play(){
-                        var mi_audio = document.getElementById("audio_poi");
-			if (mi_audio.src == '') {
-				mi_audio.src = "https://htmlcontroller-vr.44fs.preview.openshiftapps.com/html/audio_activado.mp3";
-				}
-                        mi_audio.load();
-                        mi_audio.play();
-}
-
-</script>
+<div id="log"></div>
 </body>
 </html>

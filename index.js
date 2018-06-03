@@ -6,16 +6,27 @@ var WebSocketServer = require('ws').Server;
 var sesion_estado = "NULA";
 var timer;
 var html_player_controller = new Object();
+//var https = require('https');
 var http = require('http');
+var fs = require('fs');
 
-var httpServer = http.createServer(app).listen(8080);
-var wss = new WebSocketServer({server: httpServer});
+var serverConfig = {
+    key: fs.readFileSync('./server.key'),
+    cert: fs.readFileSync('./server.crt'),
+};
+
+var HTTPS_PORT = 8091;
+
+//var httpsServer = https.createServer(serverConfig, app).listen(HTTPS_PORT);
+var httpServer = http.createServer(app).listen(HTTPS_PORT);
+//var wss = new WebSocketServer({server: httpsServer});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
         extended: true
         }));
 
+/*
 wss.on('connection', function(ws) {
     console.log("Nueva conexión");
     ws.on('message', function(message) {
@@ -52,6 +63,7 @@ wss.broadcast = function(data) {
         this.clients[i].send(data);
     }
 };
+*/
 
 app.get(/^(.+)$/, function(req, res){ 
     switch(req.params[0]) {
